@@ -1,0 +1,372 @@
+<html>
+
+<head>
+    <title>猜数字游戏</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css">
+        /* 背景效果 */
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: transparent;
+            font-family: Arial, sans-serif;
+            z-index: -99999;
+        }
+
+        /* 剧中这些所有的盒子 */
+        #game-form {
+            position: absolute;
+            display: block;
+            max-width: 500px;
+            padding: 15px;
+            box-shadow: 0 0 10px #0b0bca;
+            text-align: center;
+            left: 35%;
+            top: 3%;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        #guess-field {
+            width: 100%;
+            padding: 10px;
+            font-size: 24px;
+            border: none;
+            border-radius: 5px;
+            background-color: #afa7a7;
+            box-sizing: border-box;
+        }
+
+        #submitt {
+            width: 100%;
+            margin-top: 20px;
+            padding: 15px;
+            font-size: 24px;
+            color: #fff;
+            background-color: #4caf50;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        #submitt:hover {
+            background-color: #1cd6e4;
+            border: 2px #410be4 solid;
+            width: 95%;
+            height: 95%;
+        }
+
+        #reminding-info {
+            position: absolute;
+            margin-top: 20px;
+            font-size: 24px;
+            color: #dc0bf8;
+            text-align: center;
+            background-color: transparent;
+            left: 35%;
+            top: 65vh;
+        }
+
+        /*操作h1的颜色，按钮字样的颜色*/
+        .h1-color-change {
+            font-size: 48px;
+            color: red;
+            animation-name: change-color;
+            animation-duration: 4s;
+            animation-iteration-count: 10;
+        }
+
+        @keyframes change-color {
+            0% {
+                color: red;
+            }
+
+            10% {
+                color: orange;
+            }
+
+            20% {
+                color: yellow;
+            }
+
+            30% {
+                color: green;
+            }
+
+            40% {
+                color: blue;
+            }
+
+            50% {
+                color: indigo;
+            }
+
+            60% {
+                color: violet;
+            }
+
+            70% {
+                color: black;
+            }
+
+            80% {
+                color: gray;
+            }
+
+            90% {
+                color: white;
+            }
+
+            100% {
+                color: red;
+            }
+        }
+
+        /*label*/
+        .label-color-change {
+            font-size: 36px;
+            color: #FF0000;
+            border: 2px solid #000000;
+            padding: 10px;
+            animation-name: colorChangeBorderAnimate;
+            animation-duration: 5s;
+            animation-iteration-count: infinite;
+        }
+
+        @keyframes colorChangeBorderAnimate {
+            0% {
+                color: #FF0000;
+                border-color: #000000;
+            }
+
+            25% {
+                color: #00FF00;
+                border-color: #FF0000;
+            }
+
+            50% {
+                color: #0000FF;
+                border-color: #00FF00;
+            }
+
+            75% {
+                color: #FF5733;
+                border-color: #0000FF;
+            }
+
+            100% {
+                color: #FF0000;
+                border-color: #FF5733;
+            }
+        }
+    </style>
+    <script type="text/javascript">
+        var num = Math.floor(Math.random() * 100) + 1;
+        window.onload = function () {
+            document.getElementById("game-form").addEventListener("submit", function (event) {
+                // 阻止表单默认提交行为
+                event.preventDefault();
+                var guessField = document.getElementById("guess-field");
+                var resultField = document.getElementById("result");
+                // 生成1-100之间的随机整数
+
+
+                console.log("随机数：", num);
+                var guess = parseInt(guessField.value);
+                if (guess < num) {
+                    resultField.innerText = "猜小了，再试试。";
+                } else if (guess > num) {
+                    resultField.innerText = "猜大了，再试试。";
+                } else {
+                    resultField.innerText = "恭喜你猜对了！";
+                    // 禁用输入框
+                    guessField.disabled = true;
+                    guessField.style.backgroundColor = "#f2f2f2";
+                    guessField.style.color = "#999";
+                    // 隐藏提交按钮
+                    this.querySelector('input[type="submit"]').style.display = "none";
+                }
+                guessField.value = "";   // 清空猜测框内容
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <form id="game-form">
+        <h1 class="h1-color-change">猜数字游戏</h1>
+        <label class="label-color-change">请猜一个1-100之间的整数:</label>
+        <input type="number" name="guess" id="guess-field" min="1" max="100" required>
+        <input type="submit" id="submitt" value="开始猜">
+    </form>
+    <p id="reminding-info"><b style="color: red;">提示:</b> <span id="result" style="color: blue;"></span></p>
+    <!-- canvas -->
+    <script>
+        let max_particles = 300;
+        let particles = [];
+        let frequency = 100;
+        let init_num = max_particles;
+        let max_time = frequency * max_particles;
+        let time_to_recreate = false;
+        // Enable repopolate
+        setTimeout(function () {
+            time_to_recreate = true;
+        }.bind(this), max_time)
+        // Popolate particles
+        popolate(max_particles);
+        var tela = document.createElement('canvas');
+        var wW = window.innerWidth;
+        var wH = window.innerHeight;
+        tela.width = wW;
+        tela.height = wH;
+        document.querySelector('body').appendChild(tela);
+        var canvas = tela.getContext('2d');
+        class Particle {
+            constructor(canvas, options) {
+                let colors = ["#feea00", "#a9df85", "#5dc0ad", "#ff9a00", "#fa3f20"]
+                let types = ["full", "fill", "empty"]
+                this.random = Math.random()
+                this.canvas = canvas;
+                this.progress = 0;
+                this.x = (wW / 2) + (Math.random() * 200 - Math.random() * 200)
+                this.y = (wH / 2) + (Math.random() * 200 - Math.random() * 200)
+                this.w = wW;
+                this.h = wH;
+                this.radius = 1 + (8 * this.random)
+                this.type = types[this.randomIntFromInterval(0, types.length - 1)];
+                this.color = colors[this.randomIntFromInterval(0, colors.length - 1)];
+                this.a = 0
+                this.s = (this.radius + (Math.random() * 1)) / 10;
+                // this.s = 12 //Math.random() * 1;
+            }
+            getCoordinates() {
+                return {
+                    x: this.x,
+                    y: this.y
+                }
+            }
+            randomIntFromInterval(min, max) {
+                return Math.floor(Math.random() * (max - min + 1) + min);
+            }
+            render() {
+                // 创建四边形
+                let lineWidth = 0.2 + (2.8 * this.random);
+                let color = this.color;
+                switch (this.type) {
+                    case "full":
+                        this.createArcFill(this.radius, color)
+                        this.createArcEmpty(this.radius + lineWidth, lineWidth / 2, color)
+                        break;
+                    case "fill":
+                        this.createArcFill(this.radius, color)
+                        break;
+                    case "empty":
+                        this.createArcEmpty(this.radius, lineWidth, color)
+                        break;
+                }
+            }
+            createArcFill(radius, color) {
+                this.canvas.beginPath();
+                this.canvas.arc(this.x, this.y, radius, 0, 2 * Math.PI);
+                this.canvas.fillStyle = color;
+                this.canvas.fill();
+                this.canvas.closePath();
+            }
+            createArcEmpty(radius, lineWidth, color) {
+                this.canvas.beginPath();
+                this.canvas.arc(this.x, this.y, radius, 0, 2 * Math.PI);
+                this.canvas.lineWidth = lineWidth;
+                this.canvas.strokeStyle = color;
+                this.canvas.stroke();
+                this.canvas.closePath();
+            }
+            move() {
+                this.x += Math.cos(this.a) * this.s;
+                this.y += Math.sin(this.a) * this.s;
+                this.a += Math.random() * 0.4 - 0.2;
+                if (this.x < 0 || this.x > this.w - this.radius) {
+                    return false
+                }
+                if (this.y < 0 || this.y > this.h - this.radius) {
+                    return false
+                }
+                this.render()
+                return true
+            }
+            calculateDistance(v1, v2) {
+                let x = Math.abs(v1.x - v2.x);
+                let y = Math.abs(v1.y - v2.y);
+                return Math.sqrt((x * x) + (y * y));
+            }
+        }
+        /*
+         * 清理canvas
+         * @num:粒子数量
+         */
+        function popolate(num) {
+            for (var i = 0; i < num; i++) {
+                setTimeout(function (x) {
+                    return function () {
+                        // Add particle
+                        particles.push(new Particle(canvas))
+                    };
+                }(i), frequency * i);
+            }
+            return particles.length
+        }
+
+        function clear() {
+            // 	canvas.globalAlpha=0.04;
+            canvas.fillStyle = '#111111';
+            canvas.fillRect(0, 0, tela.width, tela.height);
+            // 	canvas.globalAlpha=1;
+        }
+
+        function connection() {
+            let old_element = null;
+            particles.forEach((element, i) => {
+                if (i > 0) {
+                    let box1 = old_element.getCoordinates()
+                    let box2 = element.getCoordinates()
+                    canvas.beginPath();
+                    canvas.moveTo(box1.x, box1.y);
+                    canvas.lineTo(box2.x, box2.y);
+                    canvas.lineWidth = 0.45;
+                    canvas.strokeStyle = "#3f47ff";
+                    canvas.stroke();
+                    canvas.closePath();
+                }
+                old_element = element
+            });
+        }
+        /*
+         * 增加粒子数量的函数
+         */
+        function update() {
+            clear();
+            connection()
+            particles = particles.filter(function (p) {
+                return p.move()
+            })
+            // Recreate particles
+            if (time_to_recreate) {
+                if (particles.length < init_num) {
+                    popolate(1);
+                }
+            }
+            requestAnimationFrame(update.bind(this))
+        }
+        update()
+    </script>
+</body>
+
+</html>
